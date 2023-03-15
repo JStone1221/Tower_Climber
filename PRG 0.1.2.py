@@ -1,21 +1,22 @@
 import pygame
 import os
-
+# Initializing the game
 pygame.init()
 
+# Settomg the window settings
 winWidth = 800
 winHeight = int(winWidth * 0.8)
 screen = pygame.display.set_mode((winWidth, winHeight))
 pygame.display.set_caption("Hack n Slash")
-background_image_filename = 'Assets/Background/Battleground3.png'
-background = pygame.image.load(background_image_filename).convert()
-bg_rect = background.get_rect()
 
+# Creating Game Clock
 clock = pygame.time.Clock()
 FPS = 60
 
+# Color Variables
 BLACK = (0, 0, 0)
 
+# Physics 
 GRAVITY = 0.75
 
 # Action Variables
@@ -25,12 +26,17 @@ attack_q = False
 attack_e = False
 attack_r = False
 
+# Importing Background Image
+background_image_filename = 'Assets/Background/Battleground3.png'
+background = pygame.image.load(background_image_filename).convert()
+bg_rect = background.get_rect()
 
+# Function to put the background on the screen
 def draw_bg():
     screen.blit(background, bg_rect)
     pygame.draw.line(screen, BLACK, (0,300), (winWidth, 300))
 
-
+# Class to Create a Sprite
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, char_type, x, y, scale, speed):
         pygame.sprite.Sprite.__init__(self)
@@ -47,6 +53,7 @@ class Sprite(pygame.sprite.Sprite):
         self.action = 0
         self.update_time = pygame.time.get_ticks()
 
+        # Loop to Store Animations
         animation_types = ['Idle', 'Run', 'Jump']
         for animation in animation_types:
             temp_list = []
@@ -61,6 +68,7 @@ class Sprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
+    # Function to Move Sprite
     def move(self, moving_left, moving_right):
         dx = 0
         dy = 0
@@ -94,6 +102,7 @@ class Sprite(pygame.sprite.Sprite):
         self.rect.y += dy
 
 
+    # Fucntion to Change the Animation
     def update_animation(self):
         Animation_Timer = 100
         self.image = self.animation_list[self.action][self.index]
@@ -103,24 +112,26 @@ class Sprite(pygame.sprite.Sprite):
         if self.index >= len(self.animation_list[self.action]):
             self.index = 0
 
+    # Function to Change Sprite Action
     def update_action(self, new_action):
         if new_action != self.action:
             self.action = new_action
             self.index = 0
             self.update_time = pygame.time.get_ticks()
-
+    # Function to Draw Sprite to Screen
     def draw(self):
         screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
 
-
+# Player and Mob Sprites
 player = Sprite('Player', 200, 200, 1, 5)
 mob = Sprite('SkeletonW', 300, 235, 1, 3)
 
-
+# Start of Game Loop
 run = True
 while run:
     clock.tick(FPS)
-
+    
+    # Update Loop
     draw_bg()
     player.update_animation()
     mob.draw()
@@ -134,7 +145,7 @@ while run:
         else:
             player.update_action(0)
         player.move(moving_left, moving_right)
-
+    # Read in Imput
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -158,7 +169,7 @@ while run:
                 moving_left = False
             if event.key == pygame.K_d:
                 moving_right = False
-
+    # Update Screen
     pygame.display.update()
 
 pygame.quit()
